@@ -1,4 +1,7 @@
-with open("input.txt", "r") as f:
+import sys
+
+filename = "input.txt" if len(sys.argv) < 2 else sys.argv[1]
+with open(filename, "r") as f:
     lines = f.read().splitlines()
 
 directions = {"R": (1, 0), "L": (-1, 0), "U": (0, 1), "D": (0, -1)}
@@ -28,7 +31,7 @@ def solve(rope_len):
                     hx, hy = next_knot
                     tx, ty = knot
                     knots[j] = (tx + sign(hx - tx), ty + sign(hy - ty))
-            tail_path.append(knots[j])
+            tail_path.append(knots[-1])
     return len(set(tail_path))
 
 print("silver:", solve(2))
