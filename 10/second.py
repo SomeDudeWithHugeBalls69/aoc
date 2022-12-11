@@ -15,17 +15,12 @@ for line in lines:
     if line.startswith("noop"):
         cycle.append(X)
     elif line.startswith("addx"):
-        V = int(line.split(" ")[1])
         cycle += [X, X]
-        X += V
+        X += int(line.split(" ")[1])
 
 for i in range(len(cycle)):
     X_pos = cycle[i]
-    #if (i-1)%40 <= X_pos <= (i+1)%40: # doesn't play nice with bound overlapping/ off-by-one
-    # still has off-by-one for the first column, too lazy to fix
     if X_pos in ((i-1)%40, i%40, (i+1)%40):
-        #print("# at", str(i))
-        #draw_crt()
         crt[i] = "#"
 
 print("silver:", sum(([i * cycle[i-1] for i in (20, 60, 100, 140, 180, 220)])))
