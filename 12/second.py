@@ -1,13 +1,9 @@
 from collections import defaultdict
 
 class Vertex:
-    def __init__(self, pos, height):
+    def __init__(self, height):
         self.adjacent = set() # going out
-        self.pos = pos
         self.height = height
-
-    def __repr__(self):
-        return str(self.pos)
 
 with open("input.txt", "r") as f:
     lines = f.read().splitlines()
@@ -16,8 +12,6 @@ board = [list(line) for line in lines]
 
 # init vertices on the 2d map
 heightmap = defaultdict(lambda: None) # don't want to bother with bounds checking later
-start_coords = (None, None)
-end_coords = (None, None)
 elevations_with_a = []
 for i in range(len(board)):
     for j in range(len(board[0])):
@@ -30,7 +24,7 @@ for i in range(len(board)):
         else:
             height = ord(board[i][j])
 
-        heightmap[(i, j)] = Vertex((i, j), height)
+        heightmap[(i, j)] = Vertex(height)
 
         if board[i][j] == "a":
             elevations_with_a.append((i, j))
@@ -43,7 +37,6 @@ for i in range(len(board)):
         for n, m in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             neighbor = heightmap[(i + n, j + m)]
             if neighbor and neighbor.height - vertex.height <= 1   :
-                #print(vertex.pos, "->", neighbor.pos, vertex.height, "<=" ,neighbor.height + 1)
                 vertex.adjacent.add(neighbor)
 
 start = heightmap[start_coords]
