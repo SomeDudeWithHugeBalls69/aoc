@@ -37,9 +37,7 @@ print("silver:", sum(silver))
 
 ### part 2
 lines = data.replace("\n\n", "\n").split("\n")
-packets = []
-for line in lines:
-    packets.append(eval(line))
+packets = [eval(line) for line in lines]
 packets.append([[6]])
 packets.append([[2]])
 
