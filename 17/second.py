@@ -1,13 +1,10 @@
-import copy
 import math
-
-chamber_width = 7
 
 with open("input.txt", "r") as f:
     data = f.read()
 
 movements = list(data)
-
+chamber_width = 7
 rocks = [
 "####",
 """.#.
@@ -35,8 +32,6 @@ for rock in rocks:
     rock_offsets.append(coords)
 
 
-# 1x direction + 1x down if possible
-# returns (new_rock_coords, isStillFalling)
 def move_rock(board, rock_coords, direction):
     new_pos = set()
     # move direction
@@ -44,7 +39,6 @@ def move_rock(board, rock_coords, direction):
     for x, y in rock_coords:
         new_pos.add((x, y + vert_offset))
 
-    # check for collisions
     has_collision = any(not (0 <= y < chamber_width)
                         or (x, y) in board for x, y in new_pos)
     if has_collision:
@@ -55,7 +49,6 @@ def move_rock(board, rock_coords, direction):
     for x, y in new_pos:
         final_pos.add((x - 1, y))
 
-    # check for collisions
     has_collision = any(not (0 <= x)
                         or (x, y) in board for x, y in final_pos)
     if has_collision:
@@ -63,46 +56,13 @@ def move_rock(board, rock_coords, direction):
     return final_pos, True
 
 
-# boord[x][y]:
-#
-# ^ x
-# |
-# |.......|
-# |.......|
-# +-----------> y
-
-def solve1(iter_count):
-    tower_top = 0
-    board = set()
-    move_i = 0
-    for rock_i in range(iter_count):
-        rock_start = (tower_top + 3, 2)
-        rock_coords = set([(rock_start[0] + coord[0], rock_start[1] + coord[1])
-                                  for coord in rock_offsets[rock_i % len(rocks)]])
-
-        while True:
-            direction = movements[move_i % len(movements)]
-            rock_coords, isStillMoving = move_rock(board, rock_coords, direction)
-            move_i += 1
-            if not isStillMoving:
-                max_x = 0
-                for x, y in rock_coords:
-                    if max_x < x + 1:
-                        max_x = x + 1
-                    board.add((x, y))
-                tower_top = max(tower_top, max_x)
-                break
-
-    return tower_top
-
-
 # find a cycle
-def solve2(iter_count):
+def solve(iter_count):
     cycle_start = None
     state_cache = set()
 
     board = set()
-    contour_size = 23  # size of the top to save as state
+    contour_size = 23  # size of the top to save as state for cycle detection
     tower_top = 0  # highest block+1
     move_i = 0  # current vertical direction index
     i = 0  # stone index
@@ -127,7 +87,9 @@ def solve2(iter_count):
                 break
 
         # detect a cycle based on rock_id, movement_id and top-part of the tower
-        upper_layer = tuple([(x, y) in board for x in range(tower_top - contour_size, tower_top) for y in range(chamber_width)])
+        upper_layer = tuple([(x, y) in board
+                             for x in range(tower_top - contour_size, tower_top)
+                             for y in range(chamber_width)])
         state = (rock_id, move_i % len(movements), upper_layer)
 
         if cycle_start is None:
@@ -137,8 +99,7 @@ def solve2(iter_count):
                 state_cache.add(state)
         else:
             if state == cycle_start["state"]:
-                # found the cycle, now skip them N times and rebuild the upper_layer below tower_top
-                # if done correctly, this block shouldn't trigger again
+                # found the cycle
                 tower_top_diff = tower_top - cycle_start["tower_top"]
                 i_diff = i - cycle_start["i"]
                 times_to_skip = math.floor((iter_count - i) / i_diff)
@@ -158,5 +119,5 @@ def solve2(iter_count):
     return tower_top
 
 
-print("silver:", solve1(2022))
-print("gold:", solve2(1000000000000))
+print("silver:", solve(2022))
+print("gold:", solve(1000000000000))
