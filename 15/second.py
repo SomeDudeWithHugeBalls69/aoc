@@ -76,5 +76,4 @@ def part2():
 
 limit = 4000000
 x, y = part2()
-print(x, y)
 print("gold:", x * 4000000 + y)
