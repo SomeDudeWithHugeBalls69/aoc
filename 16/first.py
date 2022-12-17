@@ -32,13 +32,14 @@ import functools
 # sys	0m0.012s
 
 ### part 2
-# $ time python3.8 first.py
-# silver: 1915
+# $ time pypy3 second.py
 # gold: 2772
 #
-# real	1m39.250s
-# user	1m39.144s
-# sys	0m0.040s
+# real	0m10.860s
+# user	0m10.800s
+# sys	0m0.028s
+
+
 
 
 with open("input.txt", "r") as f:
@@ -154,7 +155,7 @@ for u in dist:
 #visualize_graph(G, "example_step4.png")
 
 
-########### ugly area ###########
+########### ugly area with lots of random heuristic params ###########
 # I ended up throwing random heuristics at it to bring down the runtime
 
 # 1: discard neighbors that do not have the max score
@@ -163,7 +164,7 @@ for u in dist:
 #thoroughness = 0.3
 
 
-thoroughness_offset = 0.5
+thoroughness_offset = 0.45
 thoroughness_slope = (0.3-thoroughness_offset)/30
 @functools.lru_cache(maxsize=None)
 def thoroughness(minutes_left):
@@ -200,9 +201,10 @@ def run1(valve, total_score, opened, minutes_left):
         if len(neighbors) == 0 or (minutes_left - 2) <= 0:
             return
         neighbors = [(v, (minutes_left - 2) * v.flow_rate) for v in neighbors]
-        neighbors.sort(key=lambda x: x[1], reverse=True)
+        #neighbors.sort(key=lambda x: x[1], reverse=True)
         # just assume that lower values won't be correct :^)
-        max_score = neighbors[0][1]
+        #max_score = neighbors[0][1]
+        max_score = max(neighbors, key=lambda a: a[1])[1]
         neighbors = [v for v in neighbors if v[1] >= max_score * thoroughness(minutes_left)]
         for neighbor, _ in neighbors:
             yield from run1(neighbor, total_score, opened, minutes_left - valve.edge_weights[neighbor])
@@ -226,7 +228,7 @@ def run2(valve1, valve2, score1, score2, opened, minutes_left1, minutes_left2):
     else:
         best_score_at_minute[minutes_left1] = score1+score2
 
-    ####### copy&pasted from part1 ######
+
     # always only do the player-action per function call with the most minutes_left
     if minutes_left1 >= minutes_left2:  # player1
         pass
@@ -234,16 +236,23 @@ def run2(valve1, valve2, score1, score2, opened, minutes_left1, minutes_left2):
         # do that by switching player1 with player2 variables
         valve1, score1, minutes_left1, valve2, score2, minutes_left2 = valve2, score2, minutes_left2, valve1, score1, minutes_left1
 
+    ####### copy&pasted from part1 ######
     if valve1 in opened:
         # calc possible score gain of unvisited neighbors
         neighbors = valve1.edges.difference(opened)
         if len(neighbors) == 0 or (minutes_left1 - 2) <= 0:
             return
         neighbors = [(v, (minutes_left1 - 2) * v.flow_rate) for v in neighbors]
-        neighbors.sort(key=lambda x: x[1], reverse=True)
         # just assume that lower values won't be correct :^)
-        max_score = neighbors[0][1]
-        neighbors = [v for v in neighbors if v[1] > max_score * thoroughness(minutes_left1)]
+        #neighbors.sort(key=lambda x: x[1], reverse=True)
+        #max_score = neighbors[0][1]
+        if 20 <= minutes_left1 <= 30:
+            max_score = max(neighbors, key=lambda a: a[1])[1]
+            neighbors = [v for v in neighbors if v[1] > max_score * thoroughness(minutes_left1)]
+        elif 10 <= minutes_left1 <= 20:
+            neighbors = neighbors[:5]
+        else:
+            neighbors = neighbors[:2]
         for neighbor, _ in neighbors:
             yield from run2(neighbor, valve2, score1, score2, opened, minutes_left1 - valve1.edge_weights[neighbor], minutes_left2)
     else:
