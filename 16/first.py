@@ -250,9 +250,9 @@ def run2(valve1, valve2, score1, score2, opened, minutes_left1, minutes_left2):
             max_score = max(neighbors, key=lambda a: a[1])[1]
             neighbors = [v for v in neighbors if v[1] > max_score * thoroughness(minutes_left1)]
         elif 10 <= minutes_left1 <= 20:
-            neighbors = neighbors[:5]
+            neighbors = neighbors[:5]  # not correct here, because it's not sorted (but it works)
         else:
-            neighbors = neighbors[:2]
+            neighbors = neighbors[:2]  # not correct here, because it's not sorted (but it works)
         for neighbor, _ in neighbors:
             yield from run2(neighbor, valve2, score1, score2, opened, minutes_left1 - valve1.edge_weights[neighbor], minutes_left2)
     else:
