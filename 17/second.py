@@ -68,9 +68,7 @@ def solve(iter_count):
     i = 0  # stone index
     while i < iter_count:
         rock_id = i % len(rocks)
-        rock_start = (tower_top + 3, 2)
-        rock_coords = set([(rock_start[0] + coord[0], rock_start[1] + coord[1])
-                                  for coord in rock_offsets[rock_id]])
+        rock_coords = set([(tower_top + 3 + x, 2 + y) for x, y in rock_offsets[rock_id]])
 
         # move until rock landed
         while True:
