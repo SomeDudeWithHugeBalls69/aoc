@@ -22,7 +22,7 @@ def print_numbers():
     num = zero_number.next_number
     while num.value != 0:
         print(num.value, end=" ")
-        num = num.next_number
+        num = num.next
     print()
 
 
@@ -45,26 +45,26 @@ for number in numbers:
     # unlink number from linked list
     next_number = number.next_number
     prev_number = number.prev_number
-    prev_number.next_number = next_number
-    next_number.prev_number = prev_number
+    prev_number.next = next_number
+    next_number.prev = prev_number
 
     # traverse 'step' times
     steps = number.value
     if steps > 0:
         for _ in range(steps):
-            next_number = next_number.next_number
-        prev_number = next_number.prev_number
+            next_number = next_number.next
+        prev_number = next_number.prev
     elif steps < 0:
         for _ in range(-steps):
-            prev_number = prev_number.prev_number
+            prev_number = prev_number.prev
             pass
-        next_number = prev_number.next_number
+        next_number = prev_number.next
 
     # insert number
     number.next_number = next_number
     number.prev_number = prev_number
-    next_number.prev_number = number
-    prev_number.next_number = number
+    next_number.prev = number
+    prev_number.next = number
 
     # print("======", number, "======")
     # print_numbers()
