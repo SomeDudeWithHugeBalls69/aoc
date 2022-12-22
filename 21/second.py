@@ -35,6 +35,6 @@ def func(humn_val):
     return abs(humn_val - tar_val)
 
 print("silver:", int(sum(resolve("root", monkeys["humn"]))))
-result = minimize(func, np.array([5]), method="Powell", tol=1e-7)
+result = minimize(func, monkeys["humn"], method="Nelder-Mead")
 print("gold:", int(result.x))
 
